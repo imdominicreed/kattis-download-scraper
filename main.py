@@ -67,7 +67,7 @@ def getSolvedProblems(username, password):
         os.mkdir('files')
     for problem in solved_problems:
         link = f"https://open.kattis.com/users/{username}/submissions/{problem}"
-        print(link)
+        print("DOWNLOADING:", link)
         r = s.get(link)
         soup = BeautifulSoup(r.text, 'html.parser')
         body = soup.find('tbody')
@@ -84,14 +84,14 @@ def getSolvedProblems(username, password):
             status = (tr.find('td', {"data-type": "status"})).get_text()
             lang = tr.find("td", {"data-type": "lang"}).get_text()
             link = f"https://open.kattis.com/submissions/{id}"
-            if "Accepted" in status or lang in langs:
+            if (not "Accepted" in status) or lang in langs:
                 continue
             langs.add(lang)
             sub_txt = wget(link)
             sub = BeautifulSoup(sub_txt.text, 'html.parser')
             download_link = "https://open.kattis.com" + \
                 sub.find("a", {"target": "_blank"})['href']
-            print(status, lang, link, download_link)
+            print(lang)
             data = s.get(download_link)
             file_name = download_link[download_link.rindex('/')+1:]
             open(f"files/{problem}/{file_name}", 'wb').write(data.content)
